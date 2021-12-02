@@ -1,0 +1,6 @@
+bin
+obj
+/packages
+Evasion.sln.DotSettings.user
+.idea
+.vs
