@@ -1,50 +1,48 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using BepInEx;
 using HarmonyLib;
 using JetBrains.Annotations;
 using SkillManager;
 
-namespace Evasion
+namespace Evasion;
+
+[BepInPlugin(ModGUID, ModName, ModVersion)]
+public class Evasion : BaseUnityPlugin
 {
-	[BepInPlugin(ModGUID, ModName, ModVersion)]
-	public class Evasion : BaseUnityPlugin
+	private const string ModName = "Evasion";
+	private const string ModVersion = "1.0.1";
+	private const string ModGUID = "org.bepinex.plugins.evasion";
+
+	public void Awake()
 	{
-		private const string ModName = "Evasion";
-		private const string ModVersion = "1.0";
-		private const string ModGUID = "org.bepinex.plugins.evasion";
+		Skill evasion = new("Evasion", "evasion-icon.png");
+		evasion.Description.English("Reduces the stamina usage of dodging.");
+		evasion.Name.German("Ausweichen");
+		evasion.Description.German("Reduziert die benötigte Ausdauer um auszuweichen.");
+		evasion.Configurable = true;
 
-		public void Awake()
+		Assembly assembly = Assembly.GetExecutingAssembly();
+		Harmony harmony = new(ModGUID);
+		harmony.PatchAll(assembly);
+	}
+
+	[HarmonyPatch(typeof(Player), nameof(Player.UpdateDodge))]
+	private class ReduceStaminaUsage
+	{
+		[UsedImplicitly]
+		private static void Prefix(Player __instance)
 		{
-			Skill evasion = new("Evasion", "evasion-icon.png");
-			evasion.Description.English("Reduces the stamina usage of dodging.");
-			evasion.Name.German("Ausweichen");
-			evasion.Description.German("Reduziert die benötigte Ausdauer um auszuweichen.");
-			evasion.Configurable = true;
-			
-			Assembly assembly = Assembly.GetExecutingAssembly();
-			Harmony harmony = new(ModGUID);
-			harmony.PatchAll(assembly);
+			__instance.m_dodgeStaminaUsage *= 1 - __instance.GetSkillFactor("Evasion") * 0.5f;
 		}
-		
-		[HarmonyPatch(typeof(Player), nameof(Player.UpdateDodge))]
-		private class ReduceStaminaUsage
-		{
-			[UsedImplicitly]
-			private static void Prefix(Player __instance)
-			{
-				__instance.m_dodgeStaminaUsage *= 1 - __instance.GetSkillFactor("Evasion") * 0.5f;
-			}
-			
-			[UsedImplicitly]
-			private static void Postfix(Player __instance)
-			{
-				__instance.m_dodgeStaminaUsage /= 1 - __instance.GetSkillFactor("Evasion") * 0.5f;
 
-				if (__instance.InDodge() && __instance.m_queuedDodgeTimer == 0)
-				{
-					__instance.RaiseSkill("Evasion");
-				}
+		[UsedImplicitly]
+		private static void Postfix(Player __instance)
+		{
+			__instance.m_dodgeStaminaUsage /= 1 - __instance.GetSkillFactor("Evasion") * 0.5f;
+
+			if (__instance.InDodge() && __instance.m_queuedDodgeTimer == 0)
+			{
+				__instance.RaiseSkill("Evasion");
 			}
 		}
 	}
