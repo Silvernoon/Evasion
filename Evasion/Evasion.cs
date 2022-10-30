@@ -10,7 +10,7 @@ namespace Evasion;
 public class Evasion : BaseUnityPlugin
 {
 	private const string ModName = "Evasion";
-	private const string ModVersion = "1.0.1";
+	private const string ModVersion = "1.0.2";
 	private const string ModGUID = "org.bepinex.plugins.evasion";
 
 	public void Awake()
