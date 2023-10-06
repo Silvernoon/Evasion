@@ -7,10 +7,11 @@ using SkillManager;
 namespace Evasion;
 
 [BepInPlugin(ModGUID, ModName, ModVersion)]
+[BepInIncompatibility("org.bepinex.plugins.valheim_plus")]
 public class Evasion : BaseUnityPlugin
 {
 	private const string ModName = "Evasion";
-	private const string ModVersion = "1.0.2";
+	private const string ModVersion = "1.0.3";
 	private const string ModGUID = "org.bepinex.plugins.evasion";
 
 	public void Awake()
